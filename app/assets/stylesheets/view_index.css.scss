@@ -118,9 +118,13 @@
   }
 }
 
-#forgot-password {
-  font-weight: inherit;
-  font-size: 0.9em;
+#auth-forms {
+  background-color: #f0efed;
+
+  #forgot-password {
+    font-weight: inherit;
+    font-size: 0.9em;
+  }
 }
 
 #iphone {
