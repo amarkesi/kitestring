@@ -31,6 +31,28 @@ body {
     overflow: auto;
   }
 
+  .inline {
+    display: inline;
+    margin: 0;
+  }
+
+  .no-top-margin {
+    margin-top: 0;
+  }
+
+  .no-bottom-margin {
+    margin-bottom: 0;
+  }
+
+  .no-vertical-margin {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .hidden {
+    display: none;
+  }
+
   table {
     width: 100%;
 

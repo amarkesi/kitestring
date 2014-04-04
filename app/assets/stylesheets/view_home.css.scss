@@ -7,7 +7,6 @@
   font-size: 0.9em;
   font-weight: 400;
   color: #666;
-  @include border-radius(2px);
 }
 
 .expired {
@@ -18,14 +17,7 @@
   padding: 8px 8px;
 }
 
-#account {
-  a {
-    font-weight: 400;
-  }
-}
-
 .update-field-container {
-  @include border-radius(2px);
   margin: ($paragraph-margin / 2) 0;
 }
 

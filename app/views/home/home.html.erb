@@ -19,7 +19,7 @@
       <div class="row main-row">
         <div class="span6 offset3">
           <h2 class="no-top-margin"><i class="fa fa-refresh"></i> Your Current Trip</h2>
-          <p id="current-message">{{ current_message }}</p>
+          <p id="current-message" class="rounded">{{ current_message }}</p>
           <p><i class="fa fa-clock-o"></i> <strong>ETA:</strong> <span data-ng-class="{'expired': expired}">{{ current_time_string }} {{ current_date_string }} (<strong>{{ current_interval_string }}</strong>)</span></p>
           <p class="no-bottom-margin"><a href="/end_checkpoint" class="button" data-ks-post-anchor="updateCurrentCheckpointFromServer">End trip</a></p>
         </div>
@@ -97,7 +97,7 @@
           <a href="#" data-ng-click="startAddContact($event)" data-ng-show="contacts.length > 0">Add another contact</a>
           <a href="#" data-ng-click="startAddContact($event)" data-ng-hide="contacts.length > 0">Add your first contact</a>
         </div>
-        <div class="update-field-container gray-vessel slide" data-ng-hide="contact_locked">
+        <div class="update-field-container gray-vessel slide rounded" data-ng-hide="contact_locked">
           <%= form_tag('/new_contact', { 'method' => 'post', 'data-ks-form' => 'addContact', 'class' => 'update-field-form no-vertical-margin' }) do %>
             <div class="small-p no-top-margin">
               <i class="fa fa-user fa-fw"></i> New contact:
@@ -133,7 +133,7 @@
           <i class="fa fa-lightbulb-o fa-fw"></i>
           Full name: <a href="#" data-ng-click="startUpdateName($event)">{{ name }}</a>
         </div>
-        <div class="update-field-container gray-vessel slide" data-ng-hide="name_locked">
+        <div class="update-field-container gray-vessel slide rounded" data-ng-hide="name_locked">
           <%= form_tag('/update_name', { 'method' => 'post', 'data-ks-form' => 'updateName', 'class' => 'update-field-form no-vertical-margin' }) do %>
             <div class="small-p no-top-margin">
               <i class="fa fa-lightbulb-o fa-fw"></i> Full name:
@@ -152,7 +152,7 @@
           <i class="fa fa-mobile fa-fw"></i> Phone number:
           <a href="#" data-ng-click="startUpdatePhone($event)">{{ phone }}</a>
         </div>
-        <div class="update-field-container gray-vessel slide" data-ng-hide="phone_locked">
+        <div class="update-field-container gray-vessel slide rounded" data-ng-hide="phone_locked">
           <%= form_tag('/update_phone', { 'method' => 'post', 'data-ks-form' => 'updatePhone', 'class' => 'update-field-form no-vertical-margin' }) do %>
             <div class="small-p no-top-margin">
               <i class="fa fa-mobile fa-fw"></i> Phone number:
@@ -175,7 +175,7 @@
           <i class="fa fa-lock fa-fw"></i>
           <a href="#" data-ng-click="startUpdatePassword($event)">Update password</a>
         </div>
-        <div class="update-field-container gray-vessel slide" data-ng-hide="password_locked">
+        <div class="update-field-container gray-vessel slide rounded" data-ng-hide="password_locked">
           <%= form_tag('/update_password', { 'method' => 'post', 'data-ks-form' => 'updatePassword', 'class' => 'update-field-form no-vertical-margin' }) do %>
             <div class="small-p no-top-margin">
               <i class="fa fa-lock fa-fw"></i> New password:

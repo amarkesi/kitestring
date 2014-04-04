@@ -65,28 +65,6 @@ body {
     margin: ($paragraph-margin / 2) 0;
   }
 
-  .no-top-margin {
-    margin-top: 0;
-  }
-
-  .no-bottom-margin {
-    margin-bottom: 0;
-  }
-
-  .no-vertical-margin {
-    margin-top: 0;
-    margin-bottom: 0;
-  }
-
-  .hidden {
-    display: none;
-  }
-
-  form.inline {
-    display: inline;
-    margin: 0;
-  }
-
   .slide {
     overflow: hidden;
   }
