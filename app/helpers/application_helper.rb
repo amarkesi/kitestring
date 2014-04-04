@@ -22,7 +22,11 @@ module ApplicationHelper
     if phone.gsub(/[^0-9]/, '').size == 11 && phone[0] == '1'
       phone = '+' + phone
     end
-    return Phoner::Phone.parse(phone).to_s
+    normalized = Phoner::Phone.parse(phone).to_s
+    if normalized == ''
+      raise
+    end
+    return normalized
   end
 
 end
