@@ -51,11 +51,7 @@
         <div class="clearfix">
           <h1><a href="/"><span class="title-kite">Kite</span>string</a></h1>
           <div id="nav">
-            <% if session[:authenticated_user_id] == nil %>
-              <% if current_page?(controller: 'home', action: 'index') %>
-                <a href="#sign_in_form" data-ks-named-anchor><i class="fa fa-sign-in"></i> Sign in</a>
-              <% end %>
-            <% else %>
+            <% if session[:authenticated_user_id] != nil %>
               <a href="/sign_out" data-ks-post-anchor><i class="fa fa-sign-out"></i> Sign out</a>
             <% end %>
           </div>

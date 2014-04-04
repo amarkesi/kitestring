@@ -36,17 +36,19 @@ body {
     margin: 0;
   }
 
-  .no-top-margin {
-    margin-top: 0;
-  }
+  p, .p, .small-p, form, table, .quote-container, * {
+    &.no-top-margin {
+      margin-top: 0;
+    }
 
-  .no-bottom-margin {
-    margin-bottom: 0;
-  }
+    &.no-bottom-margin {
+      margin-bottom: 0;
+    }
 
-  .no-vertical-margin {
-    margin-top: 0;
-    margin-bottom: 0;
+    &.no-vertical-margin {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
   }
 
   .hidden {
@@ -228,6 +230,30 @@ body {
   input, .button {
     height: $input-height;
     line-height: ($input-height - 16px);
+  }
+
+  .quote-container {
+    margin: 130px 0;
+    display: block;
+    font-weight: 300;
+
+    i {
+      display: block;
+      float: left;
+      font-size: 2em;
+      font-style: italic;
+    }
+
+    blockquote {
+      display: block;
+      margin: 0 0 0 48px;
+      font-size: 2em;
+      font-style: italic;
+    }
+
+    .citation {
+      text-align: right;
+    }
   }
 
 }

@@ -10,8 +10,13 @@
   <div id="hero-buildings"></div>
   <div class="container" id="hero-heading-vessel">
     <div id="hero-heading"><%= image_tag("logo.png") -%></div>
-    <div id="hero-subheading">Keep tabs on your well-being.</div>
-    <div id="hero-call-to-action"><a id="call-to-action" href="#sign_up_form" data-ks-named-anchor>Get started <i class="fa fa-angle-double-right"></i></a></div>
+    <div id="hero-subheading">
+      <audio controls>
+        <source src="/explainer.mp3" type="audio/mpeg" />
+        <source src="/explainer.ogg" type="audio/ogg" />
+        <source src="/explainer.wav" type="audio/wav" />
+      </audio>
+    </div>
   </div>
 </div>
 
@@ -35,28 +40,69 @@
   </div>
 </div>
 
-<div class="container" data-ng-controller="IndexController">
-  <div class="row main-row">
-    <div class="span4 offset2">
-      <%= form_tag('/sign_up', { 'method' => 'post', 'id' => 'verify_form', 'class' => 'hidden' }) do %>
-        <input data-ng-model="sign_up_name" name="name" type="text" />
-        <input data-ng-model="sign_up_phone" name="phone" type="text" />
-        <input type="submit" value="Submit" />
-      <% end %>
-      <%= form_tag('/sign_up_validate', { 'method' => 'post', 'id' => 'sign_up_form', 'class' => 'no-vertical-margin', 'data-ks-form' => 'signUpValidate' }) do %>
-        <h2 class="no-top-margin"><i class="fa fa-rocket"></i> Sign up</h2>
-        <div class="small-p"><input data-ng-model="sign_up_name" name="name" class="focus-target full-width" type="text" placeholder="Full name" /></div>
-        <div class="small-p"><input data-ng-model="sign_up_phone" name="phone" class="full-width" type="tel" placeholder="Phone number" /></div>
-        <div class="small-p no-bottom-margin"><input type="submit" class="button" value="Sign up" /></div>
-      <% end %>
+<div class="gray-vessel" data-ng-controller="IndexController">
+  <div class="container">
+    <div class="row main-row">
+      <div class="span4 offset2">
+        <%= form_tag('/sign_up', { 'method' => 'post', 'id' => 'verify_form', 'class' => 'hidden' }) do %>
+          <input data-ng-model="sign_up_name" name="name" type="text" />
+          <input data-ng-model="sign_up_phone" name="phone" type="text" />
+          <input type="submit" value="Submit" />
+        <% end %>
+        <%= form_tag('/sign_up_validate', { 'method' => 'post', 'id' => 'sign_up_form', 'class' => 'no-vertical-margin', 'data-ks-form' => 'signUpValidate' }) do %>
+          <h2 class="no-top-margin"><i class="fa fa-rocket"></i> Sign up</h2>
+          <div class="small-p"><input data-ng-model="sign_up_name" name="name" class="focus-target full-width" type="text" placeholder="Full name" /></div>
+          <div class="small-p"><input data-ng-model="sign_up_phone" name="phone" class="full-width" type="tel" placeholder="Phone number" /></div>
+          <div class="small-p no-bottom-margin"><input type="submit" class="button" value="Sign up" /></div>
+        <% end %>
+      </div>
+      <div class="span4">
+        <%= form_tag('/sign_in', { 'method' => 'post', 'id' => 'sign_in_form', 'class' => 'no-vertical-margin', 'data-ks-form' => '' }) do %>
+          <h2 class="no-top-margin"><i class="fa fa-sign-in"></i> Sign in</h2>
+          <div class="small-p"><input name="phone" class="focus-target full-width" type="tel" placeholder="Phone number" /></div>
+          <div class="small-p"><input name="password" class="full-width" type="password" placeholder="Password" /></div>
+          <div class="small-p no-bottom-margin"><input type="submit" class="button" value="Sign in" /> &nbsp;&nbsp;<a href="#" id="forgot-password" data-ng-click="forgotPassword($event)">Forgot password?</a></div>
+        <% end %>
+      </div>
     </div>
-    <div class="span4">
-      <%= form_tag('/sign_in', { 'method' => 'post', 'id' => 'sign_in_form', 'class' => 'no-vertical-margin', 'data-ks-form' => '' }) do %>
-        <h2 class="no-top-margin"><i class="fa fa-sign-in"></i> Sign in</h2>
-        <div class="small-p"><input name="phone" class="focus-target full-width" type="tel" placeholder="Phone number" /></div>
-        <div class="small-p"><input name="password" class="full-width" type="password" placeholder="Password" /></div>
-        <div class="small-p no-bottom-margin"><input type="submit" class="button" value="Sign in" /> &nbsp;&nbsp;<a href="#" id="forgot-password" data-ng-click="forgotPassword($event)">Forgot password?</a></div>
-      <% end %>
+  </div>
+</div>
+
+<div class="container phone-hidden">
+  <div class="row main-row">
+    <div class="span5 offset1">
+      <a class="quote-container clearfix no-top-margin" href="https://twitter.com/lil_white_whale/status/451733190768885760">
+        <i class="fa fa-quote-left"></i>
+        <blockquote>
+          This app is kind of genius.
+        </blockquote>
+        <div class="citation">
+          &mdash; Gloria Chen
+        </div>
+      </a>
+
+      <a class="quote-container clearfix" href="http://time.com/44143/kitestring-app/">
+        <i class="fa fa-quote-left"></i>
+        <blockquote>
+          Like a mom.
+        </blockquote>
+        <div class="citation">
+          &mdash; TIME Magazine
+        </div>
+      </a>
+
+      <a class="quote-container clearfix" href="http://lifehacker.com/kitestring-notifies-your-emergency-contacts-if-you-go-d-1556192455">
+        <i class="fa fa-quote-left"></i>
+        <blockquote>
+          Kitestring does the checking up for you.
+        </blockquote>
+        <div class="citation">
+          &mdash; Lifehacker
+        </div>
+      </a>
+    </div>
+    <div class="span5">
+      <%= image_tag("iphone.png", :id => "iphone") -%>
     </div>
   </div>
 </div>

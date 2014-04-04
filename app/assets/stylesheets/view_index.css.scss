@@ -1,7 +1,7 @@
 @import 'constants';
 
 #hero {
-  height: 569px;
+  height: 417px;
   position: relative;
   background-color: #221f30;
   color: #ccc;
@@ -11,7 +11,7 @@
     z-index: 5;
     position: absolute;
     left: 0px;
-    top: 50px;
+    top: 0px;
     right: 0px;
     height: 317px;
     background-position: left top;
@@ -27,9 +27,9 @@
     z-index: 5;
     position: absolute;
     left: 0px;
-    top: 417px;
+    top: 317px;
     right: 0px;
-    height: 152px;
+    height: 100px;
     background-position: left top;
     background-repeat: repeat-x;
     background-image: image-url("buildings.png");
@@ -48,44 +48,19 @@
     text-shadow: 2px 2px 1px #000;
 
     #hero-heading {
+
       img {
         width: 300px;
         height: 300px;
       }
-
-      @media (max-width: 1280px) {
-        margin-top: 20px;
-      }
     }
 
     #hero-subheading {
-      margin-top: -50px;
+      margin-top: -48px;
       font-size: 2em;
 
       @media (max-width: 1280px) {
         font-size: 1.5em;
-      }
-    }
-
-    #hero-call-to-action {
-      margin-top: 64px;
-
-      #call-to-action {
-        font-weight: 300;
-        font-size: 2em;
-        padding: 20px 40px;
-        border: 1px solid #fff;
-        text-transform: uppercase;
-        @include border-radius(2px);
-
-        &:hover {
-          border: 1px solid $anchor-color-hover;
-        }
-
-        @media (max-width: 640px) {
-          font-size: 1.5em;
-          padding: 15px 30px;
-        }
       }
     }
   }
@@ -146,4 +121,9 @@
 #forgot-password {
   font-weight: inherit;
   font-size: 0.9em;
+}
+
+#iphone {
+  width: 100%;
+  max-width: 407px;
 }
