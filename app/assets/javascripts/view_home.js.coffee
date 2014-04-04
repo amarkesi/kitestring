@@ -217,7 +217,28 @@ view_home.controller('HomeController', ['$scope', 'ajax', 'notice', ($scope, aja
   $scope.moveContactDown = (data, textStatus, jqXHR) ->
     $scope.contacts = JSON.parse(data.contacts)
 
-  $scope.newContact = (data, textStatus, jqXHR) ->
+  $scope.contact_name = ''
+  $scope.contact_phone = ''
+  $scope.contact_locked = ($scope.contacts.length > 0)
+  if $scope.contacts.length == 0
+    $("#add-contact-focus").focus()
+  
+
+  $scope.startAddContact = (event) ->
+    event.preventDefault()
+    event.stopPropagation()
+    $scope.contact_locked = false
+    $scope.contact_name = ''
+    $scope.contact_phone = ''
+    setTimeout((() -> $("#add-contact-focus").focus()), 1)
+
+  $scope.cancelAddContact = (event) ->
+    event.preventDefault()
+    event.stopPropagation()
+    $scope.contact_locked = true
+
+  $scope.addContact = (data, textStatus, jqXHR) ->
+    $scope.contact_locked = true
     new_contacts = JSON.parse(data.contacts)
     $scope.contact_name = ''
     $scope.contact_phone = ''
@@ -244,7 +265,7 @@ view_home.controller('HomeController', ['$scope', 'ajax', 'notice', ($scope, aja
     event.stopPropagation()
     $scope.name_locked = false
     $scope.name_update = $scope.name
-    setTimeout((() -> $("#update-name-input").focus()), 1)
+    setTimeout((() -> $("#update-name-focus").focus()), 1)
 
   $scope.cancelUpdateName = (event) ->
     event.preventDefault()
@@ -265,7 +286,7 @@ view_home.controller('HomeController', ['$scope', 'ajax', 'notice', ($scope, aja
     $scope.password_locked = false
     $scope.password_update = ''
     $scope.confirm_password_update = ''
-    setTimeout((() -> $("#update-password-input").focus()), 1)
+    setTimeout((() -> $("#update-password-focus").focus()), 1)
 
   $scope.cancelUpdatePassword = (event) ->
     event.preventDefault()
