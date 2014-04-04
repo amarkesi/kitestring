@@ -56,7 +56,7 @@ class HomeController < ApplicationController
     begin
       if !@error
         twilio = Twilio::REST::Client.new TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN
-        twilio.account.messages.create(:body => 'Welcome to Kitestring!  Your verification code is ' + verification_code(@phone) + '.', :to => @phone, :from => TWILIO_PHONE_NUMBER)
+        twilio.account.messages.create(:body => 'Welcome to Kitestring! Your verification code is ' + verification_code(@phone) + '.', :to => @phone, :from => TWILIO_PHONE_NUMBER)
       end
     rescue
       @error = true
@@ -251,6 +251,54 @@ class HomeController < ApplicationController
     @user.name = name
     @user.save
     return render :json => { :success => true, :name => name }
+  end
+
+  def send_code
+    phone = (params['phone'] || '').strip
+    if phone.size == 0
+      return render :json => { :success => false, :notice => 'Please enter a phone number.' }
+    end
+    begin
+      phone = normalize_phone(phone)
+    rescue
+      return render :json => { :success => false, :notice => 'That phone number appears invalid.' }
+    end
+    user = User.find_by phone: phone
+    if user && user.id != @user.id
+      return render :json => { :success => false, :notice => 'That phone number is taken.' }
+    end
+    begin
+      twilio = Twilio::REST::Client.new TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN
+      twilio.account.messages.create(:body => 'Your verification code is ' + verification_code(phone) + '. This message was requested by ' + @user.phone + '.', :to => phone, :from => TWILIO_PHONE_NUMBER)
+    rescue
+    end
+    return render :json => { :success => true, :notice => 'A verification code has been sent to your phone via SMS.' }
+  end
+
+  def update_phone
+    verification = (params['verification'] || '').strip
+    phone = (params['phone'] || '').strip
+    if verification.size == 0
+      return render :json => { :success => false, :notice => 'Please enter the verification code sent to your mobile device.' }
+    end
+    if phone.size == 0
+      return render :json => { :success => false, :notice => 'Please enter a phone number.' }
+    end
+    begin
+      phone = normalize_phone(phone)
+    rescue
+      return render :json => { :success => false, :notice => 'That phone number appears invalid.' }
+    end
+    user = User.find_by phone: phone
+    if user && user.id != @user.id
+      return render :json => { :success => false, :notice => 'That phone number is taken.' }
+    end
+    if verification != verification_code(phone)
+      return render :json => { :success => false, :notice => 'That verification code is incorrect.' }
+    end
+    @user.phone = phone
+    @user.save
+    return render :json => { :success => true, :phone => phone }
   end
 
   def update_password

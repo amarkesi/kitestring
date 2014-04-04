@@ -3,6 +3,7 @@
 
 <script>
   window.user_name = <%= @user.name.to_json.html_safe -%>;
+  window.phone = <%= @user.phone.to_json.html_safe -%>;
   window.contacts = <%= @user.contacts.order(id: :asc).to_json.html_safe -%>;
   window.active = <%= (@user.checkpoint != nil).to_json.html_safe -%>;
   <% if @user.checkpoint != nil %>
@@ -105,7 +106,7 @@
               <input name="name" id="add-contact-focus" class="full-width" data-ng-model="contact_name" placeholder="Name" type="text" />
             </div>
             <div class="small-p">
-              <input name="phone" class="full-width" data-ng-model="contact_phone" placeholder="Phone Number" type="tel" />
+              <input name="phone" class="full-width" data-ng-model="contact_phone" placeholder="Phone number" type="tel" />
             </div>
             <div class="small-p no-bottom-margin">
               <input type="submit" class="button" value="Add Contact" />
@@ -122,10 +123,12 @@
   <div class="container">
     <div class="row main-row">
       <div id="account" class="span6 offset3">
+
         <h2 class="no-top-margin">
           <i class="fa fa-home"></i>
           Account
         </h2>
+
         <div class="small-p slide" data-ng-show="name_locked">
           <i class="fa fa-lightbulb-o fa-fw"></i>
           Full name: <a href="#" data-ng-click="startUpdateName($event)">{{ name }}</a>
@@ -144,7 +147,30 @@
             </div>
           <% end %>
         </div>
-        <div class="small-p"><i class="fa fa-mobile fa-fw"></i> Phone number: <strong><%= @user.phone -%></strong></div>
+
+        <div class="small-p slide" data-ng-show="phone_locked">
+          <i class="fa fa-mobile fa-fw"></i> Phone number:
+          <a href="#" data-ng-click="startUpdatePhone($event)">{{ phone }}</a>
+        </div>
+        <div class="update-field-container gray-vessel slide" data-ng-hide="phone_locked">
+          <%= form_tag('/update_phone', { 'method' => 'post', 'data-ks-form' => 'updatePhone', 'class' => 'update-field-form no-vertical-margin' }) do %>
+            <div class="small-p no-top-margin">
+              <i class="fa fa-mobile fa-fw"></i> Phone number:
+            </div>
+            <div class="small-p">
+              <input id="update-phone-focus" name="phone" data-ng-model="phone_update" placeholder="Phone number" type="tel" />
+            </div>
+            <div class="small-p">
+              <input name="verification" placeholder="Verification code" class="focus-now" type="text" />
+              <a href="#" class="button" data-ng-click="sendCode($event)">Send code</a>
+            </div>
+            <div class="small-p no-bottom-margin">
+              <input type="submit" class="button" value="Update" />
+              <a href="#" class="button" data-ng-click="cancelUpdatePhone($event)">Cancel</a>
+            </div>
+          <% end %>
+        </div>
+
         <div class="small-p slide" data-ng-show="password_locked">
           <i class="fa fa-lock fa-fw"></i>
           <a href="#" data-ng-click="startUpdatePassword($event)">Update password</a>

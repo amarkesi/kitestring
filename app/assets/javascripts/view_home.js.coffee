@@ -276,6 +276,37 @@ view_home.controller('HomeController', ['$scope', 'ajax', 'notice', ($scope, aja
     $scope.name_locked = true
     $scope.name = data.name
 
+  $scope.phone = window.phone
+  $scope.phone_update = $scope.phone
+  $scope.phone_locked = true
+
+  $scope.startUpdatePhone = (event) ->
+    event.preventDefault()
+    event.stopPropagation()
+    $scope.phone_locked = false
+    $scope.phone_update = $scope.phone
+    setTimeout((() -> $("#update-phone-focus").focus()), 1)
+
+  $scope.sendCode = (event) ->
+    event.preventDefault()
+    event.stopPropagation()
+    ajax {
+      url: '/send_code',
+      type: 'post',
+      data: {
+        phone: $scope.phone_update
+      }
+    }
+
+  $scope.cancelUpdatePhone = (event) ->
+    event.preventDefault()
+    event.stopPropagation()
+    $scope.phone_locked = true
+
+  $scope.updatePhone = (data, textStatus, jqXHR) ->
+    $scope.phone_locked = true
+    $scope.phone = data.phone
+
   $scope.password_update = ''
   $scope.confirm_password_update = ''
   $scope.password_locked = true

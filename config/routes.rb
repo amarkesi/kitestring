@@ -21,6 +21,8 @@ Kitestring::Application.routes.draw do
   post '/status' => 'home#status'
 
   post '/update_name' => 'home#update_name'
+  post '/send_code' => 'home#send_code'
+  post '/update_phone' => 'home#update_phone'
   post '/update_password' => 'home#update_password'
   post '/delete_account' => 'home#delete_account'
 
