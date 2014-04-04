@@ -242,6 +242,7 @@ body {
       float: left;
       font-size: 2em;
       font-style: italic;
+      color: #444;
     }
 
     blockquote {
@@ -249,10 +250,15 @@ body {
       margin: 0 0 0 48px;
       font-size: 2em;
       font-style: italic;
+      color: #333;
     }
 
     .citation {
       text-align: right;
+    }
+
+    &:hover i, &:hover blockquote {
+      color: inherit;
     }
   }
 
