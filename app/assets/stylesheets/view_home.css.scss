@@ -26,6 +26,7 @@
 
 .update-field-container {
   @include border-radius(2px);
+  margin: ($paragraph-margin / 2) 0;
 }
 
 .update-field-form {
