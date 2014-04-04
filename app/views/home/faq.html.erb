@@ -6,10 +6,10 @@
     <div class="span6 offset3">
       <h2>Frequently Asked Questions</h2>
 
-      <h3>What is this?</h3>
+      <h3>What is Kitestring?</h3>
       <p>It&rsquo;s a mobile-friendly web application. Start a trip on Kitestring, and we&rsquo;ll check up on you (via SMS) to make sure you&rsquo;re okay. Reply to the message (or check in on the website) to confirm your well-being. If you don&rsquo;t check in before your ETA, we&rsquo;ll alert a list of emergency contacts that you set up ahead of time. Of course, you can always extend your ETA or check in early.</p>
 
-      <h3>Is it free?</h3>
+      <h3>Is Kitestring free?</h3>
       <p>Yep! Free as in beer and free as in freedom. It&rsquo;s <a href="https://github.com/boyers/kitestring">open source</a>! Note, however, that international SMS rates may apply outside the United States.</p>
 
       <h3>Do my emergency contacts need to confirm their phone numbers?</h3>
@@ -25,9 +25,12 @@
       <p>Of course. Just send a text message like &ldquo;15m&rdquo; to <%= TWILIO_PHONE_NUMBER -%>.</p>
 
       <h3>I got home early. Can I check in via SMS?</h3>
-      <p>Totally. Just text &ldquo;ok&rdquo; to +1 (707) 7376-523.</p>
+      <p>Totally. Just text &ldquo;ok&rdquo; to <%= TWILIO_PHONE_NUMBER -%>.</p>
 
-      <h3>Can I test it with myself as an emergency contact?</h3>
+      <h3>I forgot my password. What do I do?</h3>
+      <p>Text &ldquo;password&rdquo; to <%= TWILIO_PHONE_NUMBER -%>, and we&rsquo;ll send you a new temporary password (which you can then change on the website).</p>
+
+      <h3>Can I test Kitestring with myself as an emergency contact?</h3>
       <p>Sure! That&rsquo;s a good way to see how the app works.</p>
 
       <h3>I found a bug. What do I do?</h3>
