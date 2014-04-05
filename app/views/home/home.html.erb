@@ -4,12 +4,14 @@
 <script>
   window.user_name = <%= @user.name.to_json.html_safe -%>;
   window.phone = <%= @user.phone.to_json.html_safe -%>;
+  window.safeword = <%= @user.safeword.to_json.html_safe -%>;
+  window.message = <%= @user.message.to_json.html_safe -%>;
+  window.duresscode = <%= @user.duresscode.to_json.html_safe -%>;
   window.contacts = <%= @user.contacts.order(id: :asc).to_json.html_safe -%>;
   window.active = <%= (@user.checkpoint != nil).to_json.html_safe -%>;
   <% if @user.checkpoint != nil %>
     window.current_checkpoint = new Date();
     window.current_checkpoint.setTime(<%= (@user.checkpoint.utc().to_i * 1000).to_json.html_safe -%>);
-    window.current_message = <%= @user.message.to_json.html_safe -%>;
   <% end %>
 </script>
 
@@ -19,7 +21,6 @@
       <div class="row main-row">
         <div class="span6 offset3">
           <h2 class="no-top-margin"><i class="fa fa-refresh"></i> Your Current Trip</h2>
-          <p id="current-message" class="rounded">{{ current_message }}</p>
           <p><i class="fa fa-clock-o"></i> <strong>ETA:</strong> <span data-ng-class="{'expired': expired}">{{ current_time_string }} {{ current_date_string }} (<strong>{{ current_interval_string }}</strong>)</span></p>
           <p class="no-bottom-margin"><a href="/end_checkpoint" class="button" data-ks-post-anchor="updateCurrentCheckpointFromServer">End trip</a></p>
         </div>
@@ -32,9 +33,9 @@
       <div class="row main-row">
         <div class="span6 offset3">
           <%= form_tag('/checkpoint', { 'method' => 'post', 'class' => 'no-vertical-margin', 'data-ks-form' => 'checkpointForm' }) do %>
-            <h2 class="no-top-margin" data-ng-show="active"><i class="fa fa-pencil-square-o"></i> Update your trip</h2>
+            <h2 class="no-top-margin" data-ng-show="active"><i class="fa fa-pencil-square-o"></i> Update your ETA</h2>
             <h2 class="no-top-margin" data-ng-hide="active"><i class="fa fa-umbrella"></i> Taking a walk?</h2>
-            <p>When should we check up on you? <strong>{{ interval }}</strong></p>
+            <p>When should we check up on you?</p>
             <div class="small-p">
               <input name="time" data-ng-model="time" type="time" />
               <input name="date" data-ng-model="date" type="date" />
@@ -45,10 +46,7 @@
               <a href="#" class="button" data-ng-click="checkpointIn($event, 60)">1hr</a>
               <a href="#" class="button" data-ng-click="checkpointIn($event, 120)">2hr</a>
             </div>
-            <p>If you don&rsquo;t respond within 5 minutes of receiving our ping, we&rsquo;ll send the following message to your emergency contacts:</p>
-            <div class="small-p">
-              <textarea name="message" data-ng-model="message" class="full-width"></textarea>
-            </div>
+            <p>We&rsquo;ll check up on you in <strong>{{ interval }}</strong>.</p>
             <div class="small-p no-bottom-margin">
               <input name="datetime_utc" type="hidden" value="{{ datetime_utc }}" />
               <input type="submit" data-ng-show="active" class="button" value="Update trip" />
@@ -59,6 +57,84 @@
       </div>
     </div>
   </div>
+
+
+  <div class="container">
+    <div class="row main-row">
+      <div class="span6 offset3">
+        <h2 class="no-top-margin">
+          <i class="fa fa-users"></i> Trip options
+        </h2>
+
+        <div class="p slide" data-ng-show="message_locked">
+          <div class="p no-top-margin">If you don&rsquo;t respond within 5 minutes of receiving our ping, we&rsquo;ll send the following message to your emergency contacts:</div>
+          <div class="small-p no-bottom-margin">
+            <a href="#" id="message" data-ng-click="startUpdateMessage($event)">{{ message }}</a>
+          </div>
+        </div>
+        <div class="update-field-container gray-vessel slide rounded" data-ng-hide="message_locked">
+          <%= form_tag('/update_message', { 'method' => 'post', 'data-ks-form' => 'updateMessage', 'class' => 'update-field-form no-vertical-margin' }) do %>
+            <div class="small-p no-top-margin">
+              <i class="fa fa-comment-o fa-fw"></i> Alert message:
+            </div>
+            <div class="small-p">
+              <textarea name="message" data-ng-model="message_update" class="full-width"></textarea>
+            </div>
+            <div class="small-p no-bottom-margin">
+              <input type="submit" class="button" value="Update" />
+              <a href="#" class="button" data-ng-click="cancelUpdateMessage($event)">Cancel</a>
+            </div>
+          <% end %>
+        </div>
+
+        <div class="p slide" data-ng-show="safeword_locked">
+          <div class="p no-top-margin">Your safe word is a secret code that you use to end your trip. We strongly recommend that you set one, but it&rsquo;s up to you.</div>
+          <div class="small-p no-bottom-margin">
+            <i class="fa fa-thumbs-o-up fa-fw"></i>
+            Safe word: <a href="#" data-ng-click="startUpdateSafeword($event)">{{ safeword || 'None' }}</a>
+          </div>
+        </div>
+        <div class="update-field-container gray-vessel slide rounded" data-ng-hide="safeword_locked">
+          <%= form_tag('/update_safeword', { 'method' => 'post', 'data-ks-form' => 'updateSafeword', 'class' => 'update-field-form no-vertical-margin' }) do %>
+            <div class="small-p no-top-margin">
+              <i class="fa fa-thumbs-o-up fa-fw"></i> Safe word:
+            </div>
+            <div class="small-p">
+              <input id="update-safeword-focus" name="safeword" data-ng-model="safeword_update" placeholder="Safeword" type="text" />
+            </div>
+            <div class="small-p no-bottom-margin">
+              <input type="submit" class="button" value="Update" />
+              <a href="#" class="button" data-ng-click="cancelUpdateSafeword($event)">Cancel</a>
+            </div>
+          <% end %>
+        </div>
+
+        <div class="p slide" data-ng-show="duresscode_locked">
+          <div class="p no-top-margin">Your duress code is a secret code that you use to tell us you&rsquo;re in trouble. It will seem as though you just ended your trip, but we&rsquo;ll secretly alert all of your contacts.</div>
+          <div class="small-p no-bottom-margin">
+            <i class="fa fa-thumbs-o-down fa-fw"></i>
+            Duress code: <a href="#" data-ng-click="startUpdateDuresscode($event)">{{ duresscode || 'None' }}</a>
+          </div>
+        </div>
+        <div class="update-field-container gray-vessel slide rounded" data-ng-hide="duresscode_locked">
+          <%= form_tag('/update_duresscode', { 'method' => 'post', 'data-ks-form' => 'updateDuresscode', 'class' => 'update-field-form no-vertical-margin' }) do %>
+            <div class="small-p no-top-margin">
+              <i class="fa fa-thumbs-o-down fa-fw"></i> Duress code:
+            </div>
+            <div class="small-p">
+              <input id="update-duresscode-focus" name="duresscode" data-ng-model="duresscode_update" placeholder="Duress code" type="text" />
+            </div>
+            <div class="small-p no-bottom-margin">
+              <input type="submit" class="button" value="Update" />
+              <a href="#" class="button" data-ng-click="cancelUpdateDuresscode($event)">Cancel</a>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr />
 
   <div class="container">
     <div class="row main-row">

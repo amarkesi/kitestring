@@ -3,10 +3,10 @@ view_home = angular.module('view_home', ['ajax'])
 view_home.controller('HomeController', ['$scope', 'ajax', 'notice', ($scope, ajax, notice) ->
   # checkpoint
 
-  $scope.active = active
+  $scope.active = window.active
   if $scope.active
-    $scope.current_checkpoint = current_checkpoint
-    $scope.current_message = current_message
+    $scope.current_checkpoint = window.current_checkpoint
+    $scope.current_message = window.message
     $scope.current_time_string = ''
     $scope.current_date_string = ''
     $scope.current_interval_string = ''
@@ -156,7 +156,6 @@ view_home.controller('HomeController', ['$scope', 'ajax', 'notice', ($scope, aja
       checkpoint = getCheckpointInput()
       $scope.datetime_utc = String(checkpoint.getTime())
       $scope.interval = getRelativeTimeString(checkpoint)
-      $scope.interval = $scope.interval.charAt(0).toUpperCase() + $scope.interval.slice(1) + '.'
     updateCurrentCheckpointView()
 
   $scope.checkpointIn = (event, minutes) ->
@@ -171,16 +170,17 @@ view_home.controller('HomeController', ['$scope', 'ajax', 'notice', ($scope, aja
     if $scope.active
       $scope.current_checkpoint = new Date()
       $scope.current_checkpoint.setTime(data.datetime_utc)
-      $scope.current_message = data.message
 
+  if window.message?
+    $scope.message = window.message
+  else
+    $scope.message = 'This is ' + window.user_name + '. If you get this message, I did not get home safely when planned, and I might be in danger. (Do not reply to this message.)'
   if $scope.active
     setCheckpointInput(current_checkpoint)
-    $scope.message = $scope.current_message
   else
     initial = new Date()
     initial.setTime(initial.getTime() + 1000 * 60 * 30)
     setCheckpointInput(initial)
-    $scope.message = 'This is ' + window.user_name + '. If you get this message, I did not get home safely when planned, and I might be in danger. (Do not reply to this message.)'
   $scope.$watchCollection('[time, date]', step)
   $scope.$watch('current_checkpoint', updateCurrentCheckpointView)
   setInterval((() ->
@@ -203,6 +203,68 @@ view_home.controller('HomeController', ['$scope', 'ajax', 'notice', ($scope, aja
       ))
     else
       $scope.updateCurrentCheckpointFromServer(data, textStatus, jqXHR)
+
+  # options
+
+  $scope.message = window.message
+  $scope.message_update = $scope.message
+  $scope.message_locked = true
+
+  $scope.startUpdateMessage = (event) ->
+    event.preventDefault()
+    event.stopPropagation()
+    $scope.message_locked = false
+    $scope.message_update = $scope.message
+    setTimeout((() -> $("#update-message-focus").focus()), 1)
+
+  $scope.cancelUpdateMessage = (event) ->
+    event.preventDefault()
+    event.stopPropagation()
+    $scope.message_locked = true
+
+  $scope.updateMessage = (data, textStatus, jqXHR) ->
+    $scope.message_locked = true
+    $scope.message = data.message
+
+  $scope.safeword = window.safeword
+  $scope.safeword_update = $scope.safeword
+  $scope.safeword_locked = true
+
+  $scope.startUpdateSafeword = (event) ->
+    event.preventDefault()
+    event.stopPropagation()
+    $scope.safeword_locked = false
+    $scope.safeword_update = $scope.safeword
+    setTimeout((() -> $("#update-safeword-focus").focus()), 1)
+
+  $scope.cancelUpdateSafeword = (event) ->
+    event.preventDefault()
+    event.stopPropagation()
+    $scope.safeword_locked = true
+
+  $scope.updateSafeword = (data, textStatus, jqXHR) ->
+    $scope.safeword_locked = true
+    $scope.safeword = data.safeword
+
+  $scope.duresscode = window.duresscode
+  $scope.duresscode_update = $scope.duresscode
+  $scope.duresscode_locked = true
+
+  $scope.startUpdateDuresscode = (event) ->
+    event.preventDefault()
+    event.stopPropagation()
+    $scope.duresscode_locked = false
+    $scope.duresscode_update = $scope.duresscode
+    setTimeout((() -> $("#update-duresscode-focus").focus()), 1)
+
+  $scope.cancelUpdateDuresscode = (event) ->
+    event.preventDefault()
+    event.stopPropagation()
+    $scope.duresscode_locked = true
+
+  $scope.updateDuresscode = (data, textStatus, jqXHR) ->
+    $scope.duresscode_locked = true
+    $scope.duresscode = data.duresscode
 
   # contacts
 

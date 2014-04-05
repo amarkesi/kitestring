@@ -5,7 +5,7 @@ view_index.controller('IndexController', ['$scope', 'ajax', 'notice', ($scope, a
     $('#verify_form').submit()
 
   $scope.forgotPassword = (event) ->
-    notice('Text "password" to ' + window.kitestring_phone + ' to reset your password.')
+    notice('Text &ldquo;reset password&rdquo; to ' + window.kitestring_phone + ' to reset your password.')
     event.preventDefault()
     event.stopPropagation()
 ])

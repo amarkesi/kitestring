@@ -20,6 +20,10 @@ Kitestring::Application.routes.draw do
   post '/end_checkpoint' => 'home#end_checkpoint'
   post '/status' => 'home#status'
 
+  post '/update_message' => 'home#update_message'
+  post '/update_safeword' => 'home#update_safeword'
+  post '/update_duresscode' => 'home#update_duresscode'
+
   post '/update_name' => 'home#update_name'
   post '/send_code' => 'home#send_code'
   post '/update_phone' => 'home#update_phone'

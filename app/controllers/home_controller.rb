@@ -158,6 +158,9 @@ class HomeController < ApplicationController
     rescue
       return render :json => { :success => false, :notice => 'That phone number appears invalid.' }
     end
+    if @user.contacts.size >= 20
+      return render :json => { :success => false, :notice => 'To prevent users from abusing the system, we have to cut you off at 20 contacts. Sorry!' }
+    end
     @user.contacts.create(:name => name, :phone => phone)
     return render :json => { :success => true, :contacts => @user.contacts.order(id: :asc).to_json }
   end
@@ -202,10 +205,6 @@ class HomeController < ApplicationController
     if @user.contacts.size == 0
       return render :json => { :success => false, :notice => 'Add an emergency contact first.' }
     end
-    message = (params['message'] || '').strip
-    if message.size == 0
-      return render :json => { :success => false, :notice => 'Please enter a message to be sent to your emergency contacts.' }
-    end
     time = (params['datetime_utc'] || '').strip
     if !(time =~ /\d+?/)
       return render :json => { :success => false, :notice => 'Please format the date as YYYY-MM-DD and the time as HH:MM according to a 24-hour clock.' }
@@ -216,17 +215,15 @@ class HomeController < ApplicationController
     if @user.checkpoint
       msg = 'Your trip has been updated.'
     end
-    @user.message = message
     @user.checkpoint = Time.zone.at(time.to_i / 1000)
     @user.pinged = false
     @user.responded = false
     @user.alerted = false
     @user.save
-    return render :json => { :success => true, :active => true, :datetime_utc => (@user.checkpoint.utc().to_i * 1000), :message => message, :notice => msg }
+    return render :json => { :success => true, :active => true, :datetime_utc => (@user.checkpoint.utc().to_i * 1000), :notice => msg }
   end
 
   def end_checkpoint
-    @user.message = nil
     @user.checkpoint = nil
     @user.pinged = nil
     @user.responded = nil
@@ -237,10 +234,48 @@ class HomeController < ApplicationController
 
   def status
     if @user.checkpoint
-      return render :json => { :success => true, :active => true, :datetime_utc => (@user.checkpoint.utc().to_i * 1000), :message => @user.message }
+      return render :json => { :success => true, :active => true, :datetime_utc => (@user.checkpoint.utc().to_i * 1000) }
     else
       return render :json => { :success => true, :active => false, :datetime_utc => nil, :message => nil }
     end
+  end
+
+  def update_message
+    message = (params['message'] || '').strip
+    if message.size == 0
+      return render :json => { :success => false, :notice => 'Please enter a message for your emergency contacts.' }
+    end
+    @user.message = message
+    @user.save
+    return render :json => { :success => true, :message => message }
+  end
+
+  def update_safeword
+    safeword = (params['safeword'] || '').strip
+    if safeword.size == 0
+      @user.safeword = nil
+    else
+      if @user.duresscode != nil && @user.safeword == @user.duresscode
+        return render :json => { :success => false, :notice => 'Your safe word must be different from your duress code.' }
+      end
+      @user.safeword = safeword
+    end
+    @user.save
+    return render :json => { :success => true, :safeword => safeword }
+  end
+
+  def update_duresscode
+    duresscode = (params['duresscode'] || '').strip
+    if duresscode.size == 0
+      @user.duresscode = nil
+    else
+      if @user.safeword != nil && @user.duresscode == @user.safeword
+        return render :json => { :success => false, :notice => 'Your duress code must be different from your safe word.' }
+      end
+      @user.duresscode = duresscode
+    end
+    @user.save
+    return render :json => { :success => true, :duresscode => duresscode }
   end
 
   def update_name
@@ -371,7 +406,7 @@ class HomeController < ApplicationController
     now = Time.zone.now
     user = User.find_by phone: phone
     if user
-      if body == 'password'
+      if body == 'reset password'
         salt = (0...50).map { ('a'..'z').to_a[rand(26)] }.join
         password = (0...6).map { ('a'..'z').to_a[rand(26)] }.join
         user.password_salt = salt
@@ -428,20 +463,52 @@ class HomeController < ApplicationController
           end
           return render :xml => twiml.text
         end
-        if body != 'ok'
+
+        if user.safeword != nil && body == user.safeword.downcase
+          user.checkpoint = nil
+          user.pinged = nil
+          user.responded = nil
+          user.alerted = nil
+          user.save
           twiml = Twilio::TwiML::Response.new do |r|
-            r.Message 'Sorry, what was that?'
+            r.Message 'Thanks!  Your trip has been ended.'
           end
           return render :xml => twiml.text
         end
-        user.message = nil
-        user.checkpoint = nil
-        user.pinged = nil
-        user.responded = nil
-        user.alerted = nil
-        user.save
+
+        if user.safeword == nil && body == 'ok'
+          user.checkpoint = nil
+          user.pinged = nil
+          user.responded = nil
+          user.alerted = nil
+          user.save
+          twiml = Twilio::TwiML::Response.new do |r|
+            r.Message 'Thanks!  Your trip has been ended.'
+          end
+          return render :xml => twiml.text
+        end
+
+        if user.duresscode != nil && body == user.duresscode.downcase
+          user.contacts.each do |contact|
+            begin
+              twilio.account.messages.create(:body => user.message, :to => contact.phone, :from => TWILIO_PHONE_NUMBER)
+            rescue
+            end
+          end
+
+          user.checkpoint = nil
+          user.pinged = nil
+          user.responded = nil
+          user.alerted = nil
+          user.save
+          twiml = Twilio::TwiML::Response.new do |r|
+            r.Message 'Thanks!  Your trip has been ended.'
+          end
+          return render :xml => twiml.text
+        end
+
         twiml = Twilio::TwiML::Response.new do |r|
-          r.Message 'Thanks!  Your trip has been ended.'
+          r.Message 'Sorry, what was that?'
         end
         return render :xml => twiml.text
       end

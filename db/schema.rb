@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140203012924) do
+ActiveRecord::Schema.define(version: 20140405064302) do
 
   create_table "contacts", force: true do |t|
     t.string   "name",       null: false
@@ -27,12 +27,14 @@ ActiveRecord::Schema.define(version: 20140203012924) do
     t.string   "password_salt", null: false
     t.string   "password_hash", null: false
     t.datetime "checkpoint"
-    t.text     "message"
+    t.text     "message",       null: false
     t.boolean  "pinged"
     t.boolean  "responded"
     t.boolean  "alerted"
     t.datetime "created_at",    null: false
     t.datetime "updated_at",    null: false
+    t.string   "safeword"
+    t.string   "duresscode"
   end
 
   add_index "users", ["phone"], name: "index_users_on_phone"
