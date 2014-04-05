@@ -253,7 +253,7 @@ class HomeController < ApplicationController
     if safeword.size == 0
       @user.safeword = nil
     else
-      if @user.duresscode != nil && @user.safeword == @user.duresscode
+      if @user.duresscode != nil && safeword == @user.duresscode
         return render :json => { :success => false, :notice => 'Your safe word must be different from your duress code.' }
       end
       @user.safeword = safeword
@@ -267,7 +267,7 @@ class HomeController < ApplicationController
     if duresscode.size == 0
       @user.duresscode = nil
     else
-      if @user.safeword != nil && @user.duresscode == @user.safeword
+      if @user.safeword != nil && duresscode == @user.safeword
         return render :json => { :success => false, :notice => 'Your duress code must be different from your safe word.' }
       end
       @user.duresscode = duresscode
