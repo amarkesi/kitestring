@@ -217,8 +217,7 @@ class HomeController < ApplicationController
     end
     @user.checkpoint = Time.zone.at(time.to_i / 1000)
     @user.pinged = false
-    @user.responded = false
-    @user.alerted = false
+    @user.duress = false
     @user.save
     return render :json => { :success => true, :active => true, :datetime_utc => (@user.checkpoint.utc().to_i * 1000), :notice => msg }
   end
@@ -226,8 +225,7 @@ class HomeController < ApplicationController
   def end_checkpoint
     @user.checkpoint = nil
     @user.pinged = nil
-    @user.responded = nil
-    @user.alerted = nil
+    @user.duress = nil
     @user.save
     return render :json => { :success => true, :active => false, :datetime_utc => nil, :message => nil }
   end
@@ -363,6 +361,19 @@ class HomeController < ApplicationController
     now = Time.zone.now
     twilio = Twilio::REST::Client.new TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN
     User.all.each do |user|
+      if user.duress == true
+        user.contacts.each do |contact|
+          begin
+            twilio.account.messages.create(:body => user.message, :to => contact.phone, :from => TWILIO_PHONE_NUMBER)
+          rescue
+          end
+        end
+        user.checkpoint = nil
+        user.pinged = nil
+        user.duress = nil
+        user.save
+        next
+      end
       if user.checkpoint
         if now > user.checkpoint
           if user.pinged == false
@@ -376,22 +387,21 @@ class HomeController < ApplicationController
             end
             user.pinged = true
             user.save
-          else
-            if now > user.checkpoint + 5.minutes
-              if user.responded == false
-                if user.alerted == false
-                  user.contacts.each do |contact|
-                    begin
-                      twilio.account.messages.create(:body => user.message, :to => contact.phone, :from => TWILIO_PHONE_NUMBER)
-                    rescue
-                    end
-                  end
-                  twilio.account.messages.create(:body => 'You did not respond.  Your alert message has been sent to your emergency contacts.', :to => user.phone, :from => TWILIO_PHONE_NUMBER)
-                  user.alerted = true
-                  user.save
-                end
+            next
+          end
+          if now > user.checkpoint + 5.minutes
+            user.contacts.each do |contact|
+              begin
+                twilio.account.messages.create(:body => user.message, :to => contact.phone, :from => TWILIO_PHONE_NUMBER)
+              rescue
               end
             end
+            twilio.account.messages.create(:body => 'You did not respond.  Your alert message has been sent to your emergency contacts.', :to => user.phone, :from => TWILIO_PHONE_NUMBER)
+            user.checkpoint = nil
+            user.pinged = nil
+            user.duress = nil
+            user.save
+            next
           end
         end
       end
@@ -421,12 +431,21 @@ class HomeController < ApplicationController
         end
         return render :xml => twiml.text
       end
+
+      if user.duresscode != nil && body == user.duresscode.downcase
+        user.duress = true
+        user.save
+        twiml = Twilio::TwiML::Response.new do |r|
+          r.Message 'Thanks!  Your trip has been ended.'
+        end
+        return render :xml => twiml.text
+      end
+
       if user.checkpoint
         if body =~ /[1-9]\d*\s*m(in|inute)?s?/
           num = body.scan(/\d+/)[0].to_i
           user.checkpoint = Time.zone.now + num.minutes
           user.pinged = false
-          user.alerted = false
           user.save
           twiml = Twilio::TwiML::Response.new do |r|
             if num == 1
@@ -441,7 +460,6 @@ class HomeController < ApplicationController
           num = body.scan(/\d+/)[0].to_i
           user.checkpoint = Time.zone.now + num.hours
           user.pinged = false
-          user.alerted = false
           user.save
           twiml = Twilio::TwiML::Response.new do |r|
             if num == 1
@@ -456,7 +474,6 @@ class HomeController < ApplicationController
           num = body.scan(/\d+/)[0].to_i
           user.checkpoint = Time.zone.now + num.days
           user.pinged = false
-          user.alerted = false
           user.save
           twiml = Twilio::TwiML::Response.new do |r|
             if num == 1
@@ -471,8 +488,7 @@ class HomeController < ApplicationController
         if user.safeword != nil && body == user.safeword.downcase
           user.checkpoint = nil
           user.pinged = nil
-          user.responded = nil
-          user.alerted = nil
+          user.duress = nil
           user.save
           twiml = Twilio::TwiML::Response.new do |r|
             r.Message 'Thanks!  Your trip has been ended.'
@@ -483,27 +499,7 @@ class HomeController < ApplicationController
         if user.safeword == nil && body == 'ok'
           user.checkpoint = nil
           user.pinged = nil
-          user.responded = nil
-          user.alerted = nil
-          user.save
-          twiml = Twilio::TwiML::Response.new do |r|
-            r.Message 'Thanks!  Your trip has been ended.'
-          end
-          return render :xml => twiml.text
-        end
-
-        if user.duresscode != nil && body == user.duresscode.downcase
-          user.contacts.each do |contact|
-            begin
-              twilio.account.messages.create(:body => user.message, :to => contact.phone, :from => TWILIO_PHONE_NUMBER)
-            rescue
-            end
-          end
-
-          user.checkpoint = nil
-          user.pinged = nil
-          user.responded = nil
-          user.alerted = nil
+          user.duress = nil
           user.save
           twiml = Twilio::TwiML::Response.new do |r|
             r.Message 'Thanks!  Your trip has been ended.'
