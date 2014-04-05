@@ -97,7 +97,7 @@ class HomeController < ApplicationController
       return render :json => { :success => false, :notice => 'That verification code is incorrect.' }
     end
     salt = (0...50).map { ('a'..'z').to_a[rand(26)] }.join
-    user = User.create(:phone => phone, :phone => phone, :name => name, :password_salt => salt, :password_hash => password_hash(password, salt))
+    user = User.create(:phone => phone, :phone => phone, :name => name, :password_salt => salt, :password_hash => password_hash(password, salt), :message => 'This is ' + name + '. If you get this message, I did not get home safely when planned, and I might be in danger. (Do not reply to this message.)')
     session[:authenticated_user_id] = user.id
     return render :json => { :success => true, :location => '/home' }
   end
