@@ -213,7 +213,7 @@ class HomeController < ApplicationController
       return render :json => { :success => false, :notice => 'The time must be in the future.' }
     end
     if @user.checkpoint
-      msg = 'Your trip has been updated.'
+      msg = 'Your ETA has been updated.'
     end
     @user.checkpoint = Time.zone.at(time.to_i / 1000)
     @user.pinged = false

@@ -48,7 +48,9 @@
             <p></p>
             <div class="small-p no-bottom-margin">
               <input name="datetime_utc" type="hidden" value="{{ datetime_utc }}" />
-              <input type="submit" data-ng-show="active" class="button" value="Update trip" />
+              <span data-ng-show="active">
+                <input type="submit" class="button" value="Update your ETA" />&nbsp; and we&rsquo;ll check up on you <strong>{{ interval }}</strong>.
+              </span>
               <span data-ng-hide="active">
                 <input type="submit" class="button" value="Embark" />&nbsp; and we&rsquo;ll check up on you <strong>{{ interval }}</strong>.
               </span>
