@@ -367,7 +367,11 @@ class HomeController < ApplicationController
         if now > user.checkpoint
           if user.pinged == false
             begin
-              twilio.account.messages.create(:body => 'Your Kitestring trip is over!  Please reply \'ok\' to end your trip so we know you\'re safe.  You can also reply a duration like \'5m\' to extend your ETA.', :to => user.phone, :from => TWILIO_PHONE_NUMBER)
+              if user.safeword == nil
+                twilio.account.messages.create(:body => 'Your Kitestring trip is over!  Please reply \'ok\' to end your trip so we know you\'re okay.  You can also reply a duration like \'5m\' to extend your ETA.', :to => user.phone, :from => TWILIO_PHONE_NUMBER)
+              else
+                twilio.account.messages.create(:body => 'Your Kitestring trip is over!  Please reply with your safe word to end your trip so we know you\'re okay.  You can also reply a duration like \'5m\' to extend your ETA.', :to => user.phone, :from => TWILIO_PHONE_NUMBER)
+              end
             rescue
             end
             user.pinged = true
